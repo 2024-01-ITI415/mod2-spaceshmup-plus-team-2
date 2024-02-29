@@ -137,6 +137,7 @@ public class Hero : MonoBehaviour {
         set
         {
             _shieldLevel = Mathf.Min(value, 4);
+            speed = speed + (shieldLevel * 5);
             // If the shield is going to be set to less than zero
             if (value < 0)
             {
