@@ -148,17 +148,22 @@ public class Hero : MonoBehaviour {
         }
     }
 
+
+    private int nextWeaponSlot;
     Weapon GetEmptyWeaponSlot()
     {
-        for (int i=0; i<weapons.Length; i++)
-        {
-            if (weapons[i].type == WeaponType.none)
-            {
-                return (weapons[i]);
-            }
-        }
+        //for (int i=0; i<weapons.Length; i++)
+        //{
+        //    if (weapons[i].type == WeaponType.none)
+        //    {
+        //        return (weapons[i]);
+        //    }
+        //}
 
-        return weapons[(Random.Range(0, weapons.Length-1))];
+        nextWeaponSlot++;
+        nextWeaponSlot %= weapons.Length;
+
+        return weapons[nextWeaponSlot];
     }
 
     void ClearWeapons()
