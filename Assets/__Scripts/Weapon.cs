@@ -46,6 +46,7 @@ public class Weapon : MonoBehaviour {
     public GameObject collar;
     public float lastShotTime; // Time last shot was fired
     private Renderer collarRend;
+    public LineRenderer laserLine;
 
     private void Start()
     {
@@ -93,6 +94,7 @@ public class Weapon : MonoBehaviour {
         else
         {
             this.gameObject.SetActive(true);
+            laserLine.SetPosition(1, Vector3.zero);
         }
         def = Main.GetWeaponDefinition(_type);
         collarRend.material.color = def.color;
@@ -132,6 +134,10 @@ public class Weapon : MonoBehaviour {
                 p.transform.rotation = Quaternion.AngleAxis(-10, Vector3.back);
                 p.rigid.velocity = p.transform.rotation * vel;
                 break;
+
+            case WeaponType.laser:
+                MakeLaser(); //Create laser line
+                break;
         }
     }
 
@@ -154,5 +160,20 @@ public class Weapon : MonoBehaviour {
         p.type = type;
         lastShotTime = Time.time;
         return p;
+    }
+
+    public void MakeLaser()
+    {
+        laserLine.SetPosition(0, transform.position);
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.up, out hit))
+        {
+            if (hit.collider)
+            {
+                laserLine.SetPosition(1, hit.point);
+            }
+        }
+        else laserLine.SetPosition(1, transform.up * 100);
     }
 }
