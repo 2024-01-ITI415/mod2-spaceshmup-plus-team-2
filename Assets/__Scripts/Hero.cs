@@ -15,6 +15,8 @@ public class Hero : MonoBehaviour {
     public float projectileSpeed = 40;
     public Weapon[] weapons;
 
+    public float count = 0;
+
     [Header("Set Dynamically")]
     [SerializeField]
     public float _shieldLevel = 1;
@@ -85,6 +87,7 @@ public class Hero : MonoBehaviour {
         if(go.tag == "Enemy")
         {
             shieldLevel--;
+            speed -= 3;
             Destroy(go);
         }
         else if (go.tag == "PowerUp")
@@ -105,6 +108,10 @@ public class Hero : MonoBehaviour {
         {
             case WeaponType.shield:
                 shieldLevel++;
+                if(shieldLevel < 5)
+                {
+                    speed += 3;
+                }
                 break;
 
             default:
@@ -137,7 +144,6 @@ public class Hero : MonoBehaviour {
         set
         {
             _shieldLevel = Mathf.Min(value, 4);
-            speed = speed + (shieldLevel * 5);
             // If the shield is going to be set to less than zero
             if (value < 0)
             {
@@ -162,9 +168,14 @@ public class Hero : MonoBehaviour {
 
     void ClearWeapons()
     {
-        foreach (Weapon w in weapons)
+        if(count < 5)
         {
+        foreach (Weapon w in weapons)
+        {   
+            
             w.SetType(WeaponType.none);
+            count++;
+        }
         }
     }
 }
