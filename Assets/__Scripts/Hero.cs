@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Hero : MonoBehaviour {
@@ -108,21 +109,21 @@ public class Hero : MonoBehaviour {
                 break;
 
             default:
-                if(pu.type == weapons[0].type)
-                {
+                //if(pu.type == weapons[0].type)
+                //{
                     Weapon w = GetEmptyWeaponSlot();
                     if(w != null)
                     {
                         // Set it to pu.type
                         w.SetType(pu.type);
                     }
-                }
-                else
-                {
-                    //If this is a different weapon type
-                    ClearWeapons();
-                    weapons[0].SetType(pu.type);
-                }
+                //}
+                //else
+                //{
+                //    //If this is a different weapon type
+                //    ClearWeapons();
+                //    weapons[0].SetType(pu.type);
+                //}
                 break;
         }
         pu.AbsorbedBy(gameObject);
@@ -156,7 +157,8 @@ public class Hero : MonoBehaviour {
                 return (weapons[i]);
             }
         }
-        return (null);
+
+        return weapons[(Random.Range(0, weapons.Length-1))];
     }
 
     void ClearWeapons()
