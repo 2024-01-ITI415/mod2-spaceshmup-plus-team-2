@@ -70,6 +70,7 @@ public class Weapon : MonoBehaviour {
         if(rootGO.GetComponent<Hero>() != null)
         {
             rootGO.GetComponent<Hero>().fireDelegate += Fire;
+            rootGO.GetComponent<Hero>().laserClearDelegate += ClearLaser;
         }
     }
 
@@ -104,7 +105,7 @@ public class Weapon : MonoBehaviour {
 
     public void Fire()
     {
-        Debug.Log("Weapon Fired:" + gameObject.name);
+        //Debug.Log("Weapon Fired:" + gameObject.name);
         // If this.gameObject is inactive, return
         if (!gameObject.activeInHierarchy) return;
         // If it hasn't been enough time between shots, return
@@ -173,9 +174,10 @@ public class Weapon : MonoBehaviour {
         activeLaser.transform.position = collar.transform.position;
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit))
+        if (Physics.Raycast(transform.position, new(0,1,0), out hit, 100f, LayerMask.GetMask("Enemy")))
         {
-            if (hit.collider.CompareTag("Enemy"))
+            Debug.Log(hit.collider.gameObject);
+            if (hit.collider.transform.parent.CompareTag("Enemy"))
             {
                 Vector3 enemyDistance = new(1, hit.point.y - transform.position.y, 1);
                 activeLaser.transform.localScale = enemyDistance;
@@ -186,6 +188,13 @@ public class Weapon : MonoBehaviour {
             Vector3 farScale = new(1, 100, 1);
             activeLaser.transform.localScale = farScale;
         }
+    }
 
+    public void ClearLaser()
+    {
+        if (activeLaser != null)
+        {
+            Destroy(activeLaser);
+        }
     }
 }

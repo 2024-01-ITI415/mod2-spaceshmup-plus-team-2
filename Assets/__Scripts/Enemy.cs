@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour {
+public class Enemy : MonoBehaviour
+{
 
     [Header("Set in Inspector: Enemy")]
     public float speed = 10f; // The speed in m/s
@@ -27,7 +28,7 @@ public class Enemy : MonoBehaviour {
         // Get materials and colors for this GameObject and its children
         materials = Utils.GetAllMaterials(gameObject);
         originalColors = new Color[materials.Length];
-        for (int i=0; i<materials.Length; i++)
+        for (int i = 0; i < materials.Length; i++)
         {
             originalColors[i] = materials[i].color;
         }
@@ -50,7 +51,7 @@ public class Enemy : MonoBehaviour {
     {
         Move();
 
-        if(showingDamage && Time.time > damageDoneTime)
+        if (showingDamage && Time.time > damageDoneTime)
         {
             UnShowDamage();
         }
@@ -87,7 +88,7 @@ public class Enemy : MonoBehaviour {
                 ShowDamage();
                 // Get the damage amount from the Main WEAP_DICT
                 health -= Main.GetWeaponDefinition(p.type).damageOnHit;
-                if(health <= 0)
+                if (health <= 0)
                 {
                     // Tell the Main singleton that this ship was destroyed
                     if (!notifiedOfDestruction)
@@ -107,6 +108,45 @@ public class Enemy : MonoBehaviour {
         }
     }
 
+    private float damageTimer = 1f;
+    private float currentDamageTimer;
+    private void OnTriggerStay(Collider other)
+    {
+        GameObject otherGO = other.gameObject;
+        if (otherGO.CompareTag("LaserHero"))
+        {
+            // If this Enemy is off screen, don't damage it.
+            if (!bndCheck.isOnScreen)
+            {
+                currentDamageTimer = damageTimer;
+            }
+
+            if (currentDamageTimer <= 0)
+            {
+                // Hurt this Enemy
+                ShowDamage();
+
+                // Get the damage amount from the Main WEAP_DICT
+                health -= Main.GetWeaponDefinition(WeaponType.laser).continuousDamage;
+                currentDamageTimer = damageTimer;
+            }
+
+            currentDamageTimer -= Time.deltaTime;
+
+            if (health <= 0)
+            {
+                // Tell the Main singleton that this ship was destroyed
+                if (!notifiedOfDestruction)
+                {
+                    Main.S.ShipDestroyed(this);
+                }
+                notifiedOfDestruction = true;
+                // Destroy this enemy
+                Destroy(this.gameObject);
+            }
+        }
+    }
+
     void ShowDamage()
     {
         foreach (Material m in materials)
@@ -119,7 +159,7 @@ public class Enemy : MonoBehaviour {
 
     void UnShowDamage()
     {
-        for (int i=0; i<materials.Length; i++)
+        for (int i = 0; i < materials.Length; i++)
         {
             materials[i].color = originalColors[i];
         }

@@ -27,8 +27,9 @@ public class Hero : MonoBehaviour {
     public delegate void WeaponFireDelegate();
     // Create a WeaponFireDelegate field named fireDelegate.
     public WeaponFireDelegate fireDelegate;
+    public WeaponFireDelegate laserClearDelegate;
 
-	void Start()
+    void Start()
     {
         if (S == null)
         {
@@ -67,6 +68,11 @@ public class Hero : MonoBehaviour {
         if (Input.GetAxis("Jump") == 1 && fireDelegate != null)
         {
             fireDelegate();
+        }
+
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            laserClearDelegate();
         }
     }
 
