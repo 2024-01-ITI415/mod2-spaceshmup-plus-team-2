@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// This is an enum of the various possible weapon types.
@@ -30,6 +31,7 @@ public class WeaponDefinition
     public string letter; // Letter to show on the power-up
     public Color color = Color.white; // Color of Collar & power-up
     public GameObject projectilePrefab; // Prefab for projectiles
+    public GameObject laserPrefab; // Prefab for projectiles
     public Color projectileColor = Color.white;
     public float damageOnHit = 0; // Amount of damage caused
     public float continuousDamage = 0; // Damage per second (Laser)
@@ -46,7 +48,7 @@ public class Weapon : MonoBehaviour {
     public GameObject collar;
     public float lastShotTime; // Time last shot was fired
     private Renderer collarRend;
-    public LineRenderer laserLine;
+    public GameObject activeLaser;
 
     private void Start()
     {
@@ -94,7 +96,6 @@ public class Weapon : MonoBehaviour {
         else
         {
             this.gameObject.SetActive(true);
-            laserLine.SetPosition(1, Vector3.zero);
         }
         def = Main.GetWeaponDefinition(_type);
         collarRend.material.color = def.color;
@@ -164,16 +165,27 @@ public class Weapon : MonoBehaviour {
 
     public void MakeLaser()
     {
-        laserLine.SetPosition(0, transform.position);
+        if (activeLaser == null)
+        {
+            activeLaser = Instantiate<GameObject>(def.laserPrefab);
+        }
+
+        activeLaser.transform.position = collar.transform.position;
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.up, out hit))
+        if (Physics.Raycast(transform.position, transform.forward, out hit))
         {
-            if (hit.collider)
+            if (hit.collider.CompareTag("Enemy"))
             {
-                laserLine.SetPosition(1, hit.point);
+                Vector3 enemyDistance = new(1, hit.point.y - transform.position.y, 1);
+                activeLaser.transform.localScale = enemyDistance;
             }
         }
-        else laserLine.SetPosition(1, transform.up * 100);
+        else
+        {
+            Vector3 farScale = new(1, 100, 1);
+            activeLaser.transform.localScale = farScale;
+        }
+
     }
 }
