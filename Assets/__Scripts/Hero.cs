@@ -65,7 +65,7 @@ public class Hero : MonoBehaviour {
         // Use the fireDelegate to fire Weapons
         // First, make sure the button is pressed: Axis("Jump")
         // Then ensure that fireDelegate isn't null to avoid an error
-        if (Input.GetAxis("Jump") == 1 && fireDelegate != null)
+        if (Input.GetKey(KeyCode.Space) && fireDelegate != null)
         {
             fireDelegate();
         }

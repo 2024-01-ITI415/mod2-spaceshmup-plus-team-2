@@ -108,7 +108,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private float damageTimer = 1f;
+    private float damageTimer = .5f;
     private float currentDamageTimer;
     private void OnTriggerStay(Collider other)
     {
