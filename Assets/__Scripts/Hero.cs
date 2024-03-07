@@ -15,7 +15,7 @@ public class Hero : MonoBehaviour {
     public float projectileSpeed = 40;
     public Weapon[] weapons;
 
-    public float count = 0;
+    public int count;
 
     [Header("Set Dynamically")]
     [SerializeField]
@@ -43,6 +43,7 @@ public class Hero : MonoBehaviour {
 
         // Reset the weapons to start _Hero with 1 blaster
         ClearWeapons();
+        count++;
         weapons[0].SetType(WeaponType.blaster);
     }
 	
@@ -118,6 +119,10 @@ public class Hero : MonoBehaviour {
                 if(pu.type == weapons[0].type)
                 {
                     Weapon w = GetEmptyWeaponSlot();
+                    if(count < 5)
+                    {
+                        count++;
+                    }
                     if(w != null)
                     {
                         // Set it to pu.type
@@ -129,6 +134,10 @@ public class Hero : MonoBehaviour {
                     //If this is a different weapon type
                     ClearWeapons();
                     weapons[0].SetType(pu.type);
+                    for(int i = 1; i < count; i++)
+                    {
+                        weapons[i].SetType(pu.type);
+                    }
                 }
                 break;
         }
@@ -156,7 +165,7 @@ public class Hero : MonoBehaviour {
 
     Weapon GetEmptyWeaponSlot()
     {
-        for (int i=0; i<weapons.Length; i++)
+        for (int i = 0; i < weapons.Length; i++)
         {
             if (weapons[i].type == WeaponType.none)
             {
@@ -168,14 +177,9 @@ public class Hero : MonoBehaviour {
 
     void ClearWeapons()
     {
-        if(count < 5)
-        {
         foreach (Weapon w in weapons)
         {   
-            
             w.SetType(WeaponType.none);
-            count++;
-        }
         }
     }
 }

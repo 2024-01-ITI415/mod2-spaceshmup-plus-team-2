@@ -44,7 +44,7 @@ public class Weapon : MonoBehaviour {
     private WeaponType _type = WeaponType.none;
     public WeaponDefinition def;
     public GameObject collar;
-    public float lastShotTime; // Time last shot was fired
+    public double lastShotTime; // Time last shot was fired
     private Renderer collarRend;
 
     private void Start()
@@ -120,6 +120,7 @@ public class Weapon : MonoBehaviour {
             case WeaponType.blaster:
                 p = MakeProjectile();
                 p.rigid.velocity = vel;
+                lastShotTime = Time.time - 0.05;
                 break;
 
             case WeaponType.spread:
@@ -131,6 +132,7 @@ public class Weapon : MonoBehaviour {
                 p = MakeProjectile(); // Make left Projectile
                 p.transform.rotation = Quaternion.AngleAxis(-10, Vector3.back);
                 p.rigid.velocity = p.transform.rotation * vel;
+                lastShotTime = Time.time + 0.25;
                 break;
         }
     }
