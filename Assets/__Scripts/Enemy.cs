@@ -2,54 +2,45 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
-{
-
-    [Header("Set in Inspector: Enemy")]
-    public float speed = 10f; // The speed in m/s
-    public float fireRate = 0.3f; // Seconds/shot (Unused)
+public class Enemy : MonoBehaviour {
+    public float speed = 10f;
+    public float fireRate = 0.3f;
     public float health = 10;
-    public int score = 100; // Points earned for destroying this
-    public float showDamageDuration = 0.1f; // # seconds to show damage
-    public float powerUpDropChance = 1f; // Chance to drop a power-up
+    public int score = 100;
+    public float showDamageDuration = 0.1f;
+    public float powerUpDropChance = 1f;
 
-    [Header("Set Dynamically: Enemy")]
     public Color[] originalColors;
-    public Material[] materials;// All the Materials of this & its children
+    public Material[] materials;
     public bool showingDamage = false;
-    public float damageDoneTime; // Time to stop showing damage
-    public bool notifiedOfDestruction = false; // Will be used later
+    public float damageDoneTime;
+    public bool notifiedOfDestruction = false;
 
     protected BoundsCheck bndCheck;
+    public Transform player;
 
     private void Awake()
     {
         bndCheck = GetComponent<BoundsCheck>();
-        // Get materials and colors for this GameObject and its children
         materials = Utils.GetAllMaterials(gameObject);
         originalColors = new Color[materials.Length];
         for (int i = 0; i < materials.Length; i++)
         {
             originalColors[i] = materials[i].color;
         }
+
+        player = GameObject.FindGameObjectWithTag("Hero").transform;
     }
 
-    // This is a property: A method that acts like a field
     public Vector3 pos
     {
-        get
-        {
-            return (this.transform.position);
-        }
-        set
-        {
-            this.transform.position = value;
-        }
+        get { return transform.position; }
+        set { transform.position = value; }
     }
 
     void Update()
     {
-        Move();
+        MoveTowardsPlayer();
 
         if (showingDamage && Time.time > damageDoneTime)
         {
@@ -58,7 +49,6 @@ public class Enemy : MonoBehaviour
 
         if (bndCheck != null && bndCheck.offDown)
         {
-            // We're off the bottom, so destroy this GameObject
             Destroy(gameObject);
         }
     }
@@ -70,6 +60,16 @@ public class Enemy : MonoBehaviour
         pos = tempPos;
     }
 
+    void MoveTowardsPlayer()
+    {
+        if (player != null)
+        {
+            Vector3 direction = player.position - transform.position;
+            direction.Normalize();
+            transform.position += direction * speed * Time.deltaTime;
+        }
+    }
+
     private void OnCollisionEnter(Collision coll)
     {
         GameObject otherGO = coll.gameObject;
@@ -77,27 +77,22 @@ public class Enemy : MonoBehaviour
         {
             case "ProjectileHero":
                 Projectile p = otherGO.GetComponent<Projectile>();
-                // If this Enemy is off screen, don't damage it.
                 if (!bndCheck.isOnScreen)
                 {
                     Destroy(otherGO);
                     break;
                 }
 
-                // Hurt this Enemy
                 ShowDamage();
-                // Get the damage amount from the Main WEAP_DICT
                 health -= Main.GetWeaponDefinition(p.type).damageOnHit;
                 if (health <= 0)
                 {
-                    // Tell the Main singleton that this ship was destroyed
                     if (!notifiedOfDestruction)
                     {
                         Main.S.ShipDestroyed(this);
                     }
                     notifiedOfDestruction = true;
-                    // Destroy this enemy
-                    Destroy(this.gameObject);
+                    Destroy(gameObject);
                 }
                 Destroy(otherGO);
                 break;
