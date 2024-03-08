@@ -15,6 +15,8 @@ public class Hero : MonoBehaviour {
     public float projectileSpeed = 40;
     public Weapon[] weapons;
 
+    public int count;
+
     [Header("Set Dynamically")]
     [SerializeField]
     public float _shieldLevel = 1;
@@ -42,6 +44,7 @@ public class Hero : MonoBehaviour {
 
         // Reset the weapons to start _Hero with 1 blaster
         ClearWeapons();
+        count++;
         weapons[0].SetType(WeaponType.blaster);
     }
 	
@@ -91,6 +94,7 @@ public class Hero : MonoBehaviour {
         if(go.tag == "Enemy")
         {
             shieldLevel--;
+            speed -= 3;
             Destroy(go);
         }
         else if (go.tag == "PowerUp")
@@ -111,12 +115,20 @@ public class Hero : MonoBehaviour {
         {
             case WeaponType.shield:
                 shieldLevel++;
+                if(shieldLevel < 5)
+                {
+                    speed += 3;
+                }
                 break;
 
             default:
                 //if(pu.type == weapons[0].type)
                 //{
                     Weapon w = GetEmptyWeaponSlot();
+                    if(count < 5)
+                    {
+                        count++;
+                    }
                     if(w != null)
                     {
                         // Set it to pu.type
@@ -174,7 +186,7 @@ public class Hero : MonoBehaviour {
     void ClearWeapons()
     {
         foreach (Weapon w in weapons)
-        {
+        {   
             w.SetType(WeaponType.none);
         }
     }
