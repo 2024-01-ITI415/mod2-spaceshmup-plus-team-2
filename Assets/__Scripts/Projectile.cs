@@ -35,7 +35,10 @@ public class Projectile : MonoBehaviour {
     {
         if (bndCheck.offUp)
         {
-            Destroy(gameObject);
+            if (!gameObject.CompareTag("LaserHero"))
+            {
+                Destroy(gameObject);
+            }
         }
     }
 
